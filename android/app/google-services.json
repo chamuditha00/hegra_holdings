@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "611890438576",
+    "project_id": "hegraholdings-9198d",
+    "storage_bucket": "hegraholdings-9198d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611890438576:android:8d23e80468c05d6131b675",
+        "android_client_info": {
+          "package_name": "com.example.hegra_holdings"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsntoy1WCx7BHU0opH1ahR1apJofrGzCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
