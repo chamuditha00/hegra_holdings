@@ -4,6 +4,7 @@ class UserModel {
   final String email;
   final String password;
   final String area;
+  final String position;
 
   const UserModel({
     this.id,
@@ -11,6 +12,7 @@ class UserModel {
     required this.email,
     required this.password,
     required this.area,
+    required this.position,
   });
 
   toJson() {
@@ -19,6 +21,7 @@ class UserModel {
       'email': email,
       'password': password,
       'area': area,
+      'position': position,
     };
   }
 }

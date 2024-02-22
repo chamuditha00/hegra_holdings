@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get.dart';
 import 'package:hegra_holdings/admin/register_user.dart';
+import 'package:hegra_holdings/pages/splash_screen.dart';
+import 'package:hegra_holdings/repository/auth_repository.dart';
+import 'package:hegra_holdings/repository/user_repository.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  ).then(
+    (Value) {
+      Get.put(AuthRepository());
+      Get.put(UserRepository()); // Add this line
+    },
   );
   runApp(const MainApp());
 }

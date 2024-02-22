@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:hegra_holdings/controller/register_controller.dart';
+import 'package:hegra_holdings/models/user_model.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(RegisterController());
+    final _formKey = GlobalKey<FormState>();
+
     return SafeArea(
       child: Scaffold(
           body: SingleChildScrollView(
@@ -36,10 +42,12 @@ class SignUpScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Form(
+                  key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextFormField(
+                        controller: controller.name,
                         decoration: InputDecoration(
                             label: Text('Name'),
                             prefixIcon: Icon(
@@ -58,6 +66,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
+                        controller: controller.email,
                         decoration: InputDecoration(
                             label: Text('E-mail'),
                             prefixIcon: Icon(
@@ -76,6 +85,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
+                        controller: controller.password,
                         decoration: InputDecoration(
                             label: Text('password'),
                             prefixIcon: Icon(
@@ -94,6 +104,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
+                        controller: controller.position,
                         decoration: InputDecoration(
                             label: Text('Position'),
                             prefixIcon: Icon(
@@ -112,6 +123,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
+                        controller: controller.area,
                         decoration: InputDecoration(
                             label: Text('Area of work'),
                             prefixIcon: Icon(
@@ -132,7 +144,16 @@ class SignUpScreen extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            final user = UserModel(
+                                position: controller.position.text.trim(),
+                                name: controller.name.text.trim(),
+                                email: controller.email.text.trim(),
+                                password: controller.password.text.trim(),
+                                area: controller.area.text.trim());
+
+                            RegisterController.instance.createUser(user);
+                          },
                           child: Text('Register'),
                           style: ElevatedButton.styleFrom(
                             textStyle: TextStyle(
