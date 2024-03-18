@@ -153,6 +153,12 @@ class SignUpScreen extends StatelessWidget {
                                 area: controller.area.text.trim());
 
                             RegisterController.instance.createUser(user);
+                            RegisterController.instance.registerUser(
+                                controller.email.text.trim(),
+                                controller.password.text.trim());
+
+                            // Reset the form fields after sending data
+                            _formKey.currentState?.reset();
                           },
                           child: Text('Register'),
                           style: ElevatedButton.styleFrom(

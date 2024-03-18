@@ -7,12 +7,13 @@ import 'package:hegra_holdings/pages/login_page.dart';
 
 class AuthRepository extends GetxController {
   static AuthRepository get instance => Get.find();
-  //varible
+
   final _auth = FirebaseAuth.instance;
   late final Rx<User?> firebaseUser;
 
   @override
-  void onReady() {
+  void onInit() {
+    super.onInit();
     firebaseUser = Rx<User?>(_auth.currentUser);
     firebaseUser.bindStream(_auth.authStateChanges());
     ever(firebaseUser, _setInitialScreen);
@@ -28,19 +29,16 @@ class AuthRepository extends GetxController {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
 
-      print(firebaseUser.value);
-      if (firebaseUser.value == null) {
-        Get.offAll(() => const SignUpScreen());
-      } else {
-        Get.offAll(() => HomePage());
-      }
+      // No need to navigate here, the authentication state listener will handle it
+      // Also, firebaseUser might not be updated immediately, so this check might not work as expected
+      // Instead, let the authStateChanges handle navigation
     } on FirebaseAuthException catch (e) {
       final ex = RegisterEmailPasswordFail.code(e.code);
-      print("Error orginal: {$ex}");
+      print("Error original: $ex"); // corrected interpolation
       throw ex;
     } catch (_) {
       const ex = RegisterEmailPasswordFail();
-      print("Error: {$ex}");
+      print("Error: $ex"); // corrected interpolation
       throw ex;
     }
   }
