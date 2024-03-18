@@ -1,19 +1,32 @@
+// ignore_for_file: prefer_final_fields, prefer_const_constructors, unused_element
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:hegra_holdings/controller/register_controller.dart';
-import 'package:hegra_holdings/models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hegra_holdings/pages/login_page.dart';
 
-class SignUpScreen extends StatelessWidget {
-  const SignUpScreen({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
+
+  @override
+  SignUpPageState createState() => SignUpPageState();
+}
+
+class SignUpPageState extends State<SignUpPage> {
+  TextEditingController _userNameTextController = TextEditingController();
+  TextEditingController _emailTextController = TextEditingController();
+  TextEditingController _passwordTextController = TextEditingController();
+  TextEditingController _positionTextController = TextEditingController();
+  TextEditingController _areaTextController = TextEditingController();
+
+  FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(RegisterController());
-    final _formKey = GlobalKey<FormState>();
-
-    return SafeArea(
-      child: Scaffold(
-          body: SingleChildScrollView(
+    return Scaffold(
+      body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(30),
           child: Column(
@@ -42,12 +55,11 @@ class SignUpScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 child: Form(
-                  key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TextFormField(
-                        controller: controller.name,
+                        controller: _userNameTextController,
                         decoration: InputDecoration(
                             label: Text('Name'),
                             prefixIcon: Icon(
@@ -66,7 +78,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
-                        controller: controller.email,
+                        controller: _emailTextController,
                         decoration: InputDecoration(
                             label: Text('E-mail'),
                             prefixIcon: Icon(
@@ -85,12 +97,24 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
-                        controller: controller.password,
+                        controller: _passwordTextController,
                         decoration: InputDecoration(
                             label: Text('password'),
                             prefixIcon: Icon(
                               Icons.password,
                               color: Colors.black,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                _isPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _isPasswordVisible = !_isPasswordVisible;
+                                });
+                              },
                             ),
                             border: OutlineInputBorder(),
                             labelStyle: TextStyle(
@@ -104,7 +128,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
-                        controller: controller.position,
+                        controller: _positionTextController,
                         decoration: InputDecoration(
                             label: Text('Position'),
                             prefixIcon: Icon(
@@ -123,7 +147,7 @@ class SignUpScreen extends StatelessWidget {
                         height: 10,
                       ),
                       TextFormField(
-                        controller: controller.area,
+                        controller: _areaTextController,
                         decoration: InputDecoration(
                             label: Text('Area of work'),
                             prefixIcon: Icon(
@@ -141,25 +165,10 @@ class SignUpScreen extends StatelessWidget {
                       SizedBox(
                         height: 40,
                       ),
-                      SizedBox(
+                      Container(
                         width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            final user = UserModel(
-                                position: controller.position.text.trim(),
-                                name: controller.name.text.trim(),
-                                email: controller.email.text.trim(),
-                                password: controller.password.text.trim(),
-                                area: controller.area.text.trim());
-
-                            RegisterController.instance.createUser(user);
-                            RegisterController.instance.registerUser(
-                                controller.email.text.trim(),
-                                controller.password.text.trim());
-
-                            // Reset the form fields after sending data
-                            _formKey.currentState?.reset();
-                          },
+                        child: TextButton(
+                          onPressed: () => _signUp(),
                           child: Text('Register'),
                           style: ElevatedButton.styleFrom(
                             textStyle: TextStyle(
@@ -179,11 +188,62 @@ class SignUpScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-              )
+              ),
             ],
           ),
         ),
-      )),
+      ),
     );
+  }
+
+  Future<void> _signUp() async {
+    try {
+      if (_userNameTextController.text.isEmpty ||
+          _emailTextController.text.isEmpty ||
+          _passwordTextController.text.isEmpty ||
+          _positionTextController.text.isEmpty ||
+          _areaTextController.text.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Please fill in all fields.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailTextController.text,
+        password: _passwordTextController.text,
+      );
+
+      await _firestore.collection('Users').doc(userCredential.user!.uid).set({
+        'userId': userCredential.user!.uid,
+        'username': _userNameTextController.text,
+        'email': _emailTextController.text,
+        'password': _passwordTextController.text,
+        'position': _positionTextController.text,
+        'area': _areaTextController.text,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign Up successful!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
