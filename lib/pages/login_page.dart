@@ -1,7 +1,7 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_final_fields, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hegra_holdings/pages/home_page.dart';
+import 'package:hegra_holdings/pages/start_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -31,7 +31,7 @@ class SingInPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => StartPage()),
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

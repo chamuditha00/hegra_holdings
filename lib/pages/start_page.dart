@@ -1,7 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class StartPage extends StatelessWidget {
+class StartPage extends StatefulWidget {
   const StartPage({super.key});
+  @override
+  StartPageState createState() => StartPageState();
+}
+
+class StartPageState extends State<StartPage> {
+  TextEditingController _helperTextController = TextEditingController();
+  TextEditingController _returnedSheetsTextController = TextEditingController();
+  TextEditingController _balanceInHandTextController = TextEditingController();
+  TextEditingController _recivedJobsTextController = TextEditingController();
+
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +52,7 @@ class StartPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextFormField(
+                          controller: _helperTextController,
                           decoration: InputDecoration(
                               label: Text('Helper'),
                               prefixIcon: Icon(
@@ -76,6 +89,7 @@ class StartPage extends StatelessWidget {
                           height: 20,
                         ),
                         TextFormField(
+                          controller: _returnedSheetsTextController,
                           decoration: InputDecoration(
                               label: Text('Returned sheets'),
                               prefixIcon: Icon(
@@ -94,6 +108,7 @@ class StartPage extends StatelessWidget {
                           height: 20,
                         ),
                         TextFormField(
+                          controller: _balanceInHandTextController,
                           decoration: InputDecoration(
                               label: Text('Balance in hand'),
                               prefixIcon: Icon(
@@ -112,6 +127,7 @@ class StartPage extends StatelessWidget {
                           height: 20,
                         ),
                         TextFormField(
+                          controller: _recivedJobsTextController,
                           decoration: InputDecoration(
                               label: Text('Recived jobs'),
                               prefixIcon: Icon(

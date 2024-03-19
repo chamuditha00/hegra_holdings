@@ -2,10 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hegra_holdings/pages/login_page.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({Key? key}) : super(key: key);
+  const SignUpPage({super.key});
 
   @override
   SignUpPageState createState() => SignUpPageState();
@@ -235,7 +234,7 @@ class SignUpPageState extends State<SignUpPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
+        MaterialPageRoute(builder: (context) => SignUpPage()),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
