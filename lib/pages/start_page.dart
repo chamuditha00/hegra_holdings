@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hegra_holdings/pages/mid_day.dart';
+import 'package:intl/intl.dart';
 
 class StartPage extends StatefulWidget {
   const StartPage({super.key});
@@ -148,7 +151,7 @@ class StartPageState extends State<StartPage> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => _startTheDay(),
                             child: Text('Start'),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xff000000),
@@ -169,5 +172,38 @@ class StartPageState extends State<StartPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _startTheDay() async {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    String formattedTime = DateFormat('kk:mm').format(now);
+
+    String _getLoggedUserId() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        return 'No user logged in';
+      }
+    }
+
+    await _firestore.collection('start_day').add({
+      'user_id': _getLoggedUserId(),
+      'helper': _helperTextController.text,
+      'returned_sheets': _returnedSheetsTextController.text,
+      'balance_in_hand': _balanceInHandTextController.text,
+      'recived_jobs': _recivedJobsTextController.text,
+      'date': formattedDate,
+      'time': formattedTime,
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Day started successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => MidDaySummary()));
   }
 }
