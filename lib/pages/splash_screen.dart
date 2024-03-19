@@ -20,27 +20,28 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Stack(
-            children: [
-              AnimatedPositioned(
-                duration: const Duration(microseconds: 1600),
-                bottom: animate ? 100 : 0,
-                child: AnimatedOpacity(
-                  duration: const Duration(microseconds: 2000),
-                  opacity: animate ? 1 : 0,
-                  child: const Image(
-                      image: AssetImage('assets/images/mainlogo.png')),
+      child: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Stack(
+              children: [
+                AnimatedPositioned(
+                  duration: const Duration(microseconds: 1600),
+                  bottom: animate ? 100 : 0,
+                  child: AnimatedOpacity(
+                    duration: const Duration(microseconds: 2000),
+                    opacity: animate ? 1 : 0,
+                    child: const Image(
+                        image: AssetImage('assets/images/mainlogo.png')),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
-    ));
+    );
   }
 
   Future startAnimation() async {
