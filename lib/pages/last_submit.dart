@@ -1,7 +1,35 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-class LastSubmit extends StatelessWidget {
+class LastSubmit extends StatefulWidget {
   const LastSubmit({super.key});
+
+  @override
+  LastSubmitState createState() => LastSubmitState();
+}
+
+class LastSubmitState extends State<LastSubmit> {
+  TextEditingController _NoOfDisconnectionsTextController =
+      TextEditingController();
+  TextEditingController _NoOfReconnectionsTextController =
+      TextEditingController();
+  TextEditingController _AlreadyPaidTextController = TextEditingController();
+  TextEditingController _MeterRemovedTextController = TextEditingController();
+  TextEditingController _AlreadyDisconnectedTextController =
+      TextEditingController();
+  TextEditingController _GateClosedTextController = TextEditingController();
+  TextEditingController _PermanatlyClosedTextController =
+      TextEditingController();
+  TextEditingController _WrongMeterTextController = TextEditingController();
+  TextEditingController _BillingErrorTextController = TextEditingController();
+  TextEditingController _CantFindTextController = TextEditingController();
+  TextEditingController _ObjectionTextController = TextEditingController();
+  TextEditingController _StoppedByCEBTextController = TextEditingController();
+  TextEditingController _UnableToAttendTextController = TextEditingController();
+
+  final _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +63,7 @@ class LastSubmit extends StatelessWidget {
                     child: Column(
                       children: [
                         TextFormField(
+                          controller: _NoOfDisconnectionsTextController,
                           decoration: InputDecoration(
                               labelText: 'Number of Disconnections',
                               enabledBorder: UnderlineInputBorder(
@@ -42,6 +71,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _NoOfReconnectionsTextController,
                           decoration: InputDecoration(
                               labelText: 'Number of Reconnections',
                               enabledBorder: UnderlineInputBorder(
@@ -60,6 +90,7 @@ class LastSubmit extends StatelessWidget {
                           height: 40,
                         ),
                         TextFormField(
+                          controller: _AlreadyPaidTextController,
                           decoration: InputDecoration(
                               labelText: 'Already Paid',
                               enabledBorder: UnderlineInputBorder(
@@ -67,6 +98,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _MeterRemovedTextController,
                           decoration: InputDecoration(
                               labelText: 'Meter Removed',
                               enabledBorder: UnderlineInputBorder(
@@ -74,6 +106,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _AlreadyDisconnectedTextController,
                           decoration: InputDecoration(
                               labelText: 'Already disconnected',
                               enabledBorder: UnderlineInputBorder(
@@ -81,6 +114,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _GateClosedTextController,
                           decoration: InputDecoration(
                               labelText: 'Gate Closed',
                               enabledBorder: UnderlineInputBorder(
@@ -88,6 +122,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _PermanatlyClosedTextController,
                           decoration: InputDecoration(
                               labelText: 'permanatly Closed',
                               enabledBorder: UnderlineInputBorder(
@@ -95,6 +130,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _WrongMeterTextController,
                           decoration: InputDecoration(
                               labelText: 'Wrong Meter',
                               enabledBorder: UnderlineInputBorder(
@@ -102,6 +138,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _BillingErrorTextController,
                           decoration: InputDecoration(
                               labelText: 'Billing Error',
                               enabledBorder: UnderlineInputBorder(
@@ -109,6 +146,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _CantFindTextController,
                           decoration: InputDecoration(
                               labelText: 'Can\'t find',
                               enabledBorder: UnderlineInputBorder(
@@ -116,6 +154,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _ObjectionTextController,
                           decoration: InputDecoration(
                               labelText: 'Objection',
                               enabledBorder: UnderlineInputBorder(
@@ -123,6 +162,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _StoppedByCEBTextController,
                           decoration: InputDecoration(
                               labelText: 'Stopped by CEB',
                               enabledBorder: UnderlineInputBorder(
@@ -130,6 +170,7 @@ class LastSubmit extends StatelessWidget {
                               )),
                         ),
                         TextFormField(
+                          controller: _UnableToAttendTextController,
                           decoration: InputDecoration(
                               labelText: 'Unable to Attend',
                               enabledBorder: UnderlineInputBorder(
@@ -165,5 +206,47 @@ class LastSubmit extends StatelessWidget {
                 )
               ]),
             )));
+  }
+
+  Future<void> _submitMid() async {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    String formattedTime = DateFormat('kk:mm').format(now);
+
+    String _getLoggedUserId() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        return 'No user logged in';
+      }
+    }
+
+    await _firestore.collection('last_submit').add({
+      'user_id': _getLoggedUserId(),
+      'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
+      'NoOfReconnections': _NoOfReconnectionsTextController.text,
+      'AlreadyPaid': _AlreadyPaidTextController.text,
+      'MeterRemoved': _MeterRemovedTextController.text,
+      'AlreadyDisconnected': _AlreadyDisconnectedTextController.text,
+      'GateClosed': _GateClosedTextController.text,
+      'PermanatlyClosed': _PermanatlyClosedTextController.text,
+      'WrongMeter': _WrongMeterTextController.text,
+      'BillingError': _BillingErrorTextController.text,
+      'CantFind': _CantFindTextController.text,
+      'Objection': _ObjectionTextController.text,
+      'StoppedByCEB': _StoppedByCEBTextController.text,
+      'UnableToAttend': _UnableToAttendTextController.text,
+      'date': formattedDate,
+      'time': formattedTime,
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Mid Day submit successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => LastSubmit()));
   }
 }
