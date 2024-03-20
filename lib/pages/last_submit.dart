@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hegra_holdings/pages/summary.dart';
 import 'package:intl/intl.dart';
 
 class LastSubmit extends StatefulWidget {
@@ -183,7 +184,7 @@ class LastSubmitState extends State<LastSubmit> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => _submitLast(),
                             child: Text('Submit'),
                             style: ElevatedButton.styleFrom(
                               textStyle: TextStyle(
@@ -208,7 +209,7 @@ class LastSubmitState extends State<LastSubmit> {
             )));
   }
 
-  Future<void> _submitMid() async {
+  Future<void> _submitLast() async {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
@@ -242,11 +243,11 @@ class LastSubmitState extends State<LastSubmit> {
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Mid Day submit successfully'),
+        content: Text('Last submit successfully'),
         backgroundColor: Colors.green,
       ),
     );
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LastSubmit()));
+        context, MaterialPageRoute(builder: (context) => LastSubmitData()));
   }
 }
