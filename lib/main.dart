@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
+import 'package:hegra_holdings/admin/show_users.dart';
 import 'package:hegra_holdings/pages/splash_screen.dart';
 
 import 'package:hegra_holdings/repository/user_repository.dart';
@@ -23,10 +24,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Hegra Holdings',
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: UserDataCards(),
     );
   }
 }
