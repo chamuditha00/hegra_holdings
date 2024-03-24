@@ -1,7 +1,23 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hegra_holdings/components/NavBar.dart';
+import 'package:hegra_holdings/pages/last_submit.dart';
+import 'package:intl/intl.dart';
 
-class MidDaySummary extends StatelessWidget {
+class MidDaySummary extends StatefulWidget {
   const MidDaySummary({super.key});
+  @override
+  MidDaySummaryState createState() => MidDaySummaryState();
+}
+
+class MidDaySummaryState extends State<MidDaySummary> {
+  TextEditingController _NoOfDisconnectionsTextController =
+      TextEditingController();
+  TextEditingController _NoOfReconnectionsTextController =
+      TextEditingController();
+
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +56,7 @@ class MidDaySummary extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         TextFormField(
+                          controller: _NoOfDisconnectionsTextController,
                           decoration: InputDecoration(
                               label: Text('Number of Disconntections'),
                               prefixIcon: Icon(
@@ -58,6 +75,7 @@ class MidDaySummary extends StatelessWidget {
                           height: 20,
                         ),
                         TextFormField(
+                          controller: _NoOfReconnectionsTextController,
                           decoration: InputDecoration(
                               label: Text('Number of Reconnections'),
                               prefixIcon: Icon(
@@ -78,7 +96,7 @@ class MidDaySummary extends StatelessWidget {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () => _submitMid(),
                             child: Text('Submit'),
                             style: ElevatedButton.styleFrom(
                               textStyle: TextStyle(
@@ -103,5 +121,36 @@ class MidDaySummary extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _submitMid() async {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+    String formattedTime = DateFormat('kk:mm').format(now);
+
+    String _getLoggedUserId() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        return 'No user logged in';
+      }
+    }
+
+    await _firestore.collection('mid_day').add({
+      'user_id': _getLoggedUserId(),
+      'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
+      'NoOfReconnections': _NoOfReconnectionsTextController.text,
+      'date': formattedDate,
+      'time': formattedTime,
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Mid Day submit successfully'),
+        backgroundColor: Colors.green,
+      ),
+    );
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => NavBar()));
   }
 }
