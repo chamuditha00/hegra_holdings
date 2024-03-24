@@ -1,6 +1,7 @@
 // ignore_for_file: unused_local_variable, prefer_const_constructors, prefer_final_fields, use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hegra_holdings/components/NavBar.dart';
 import 'package:hegra_holdings/pages/start_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -31,7 +32,7 @@ class SingInPageState extends State<LoginPage> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => StartPage()),
+        MaterialPageRoute(builder: (context) => NavBar()),
       );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

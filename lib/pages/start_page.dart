@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hegra_holdings/components/NavBar.dart';
 import 'package:hegra_holdings/pages/mid_day.dart';
 import 'package:intl/intl.dart';
 
@@ -204,6 +205,6 @@ class StartPageState extends State<StartPage> {
       ),
     );
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => MidDaySummary()));
+        context, MaterialPageRoute(builder: (context) => NavBar()));
   }
 }

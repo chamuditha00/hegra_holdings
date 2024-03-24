@@ -4,6 +4,7 @@ import 'package:hegra_holdings/pages/last_submit.dart';
 import 'package:hegra_holdings/pages/login_page.dart';
 import 'package:hegra_holdings/pages/mid_day.dart';
 import 'package:hegra_holdings/pages/start_page.dart';
+import 'package:hegra_holdings/pages/summary.dart';
 
 class NavBar extends StatefulWidget {
   @override
@@ -13,10 +14,11 @@ class NavBar extends StatefulWidget {
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
 
-  final List<Widget> _pages = const [
+  final List<Widget> _pages = [
     StartPage(),
     MidDaySummary(),
     LastSubmit(),
+    ConnectionDataPage(),
   ];
 
   @override
@@ -36,7 +38,7 @@ class _NavBarState extends State<NavBar> {
               255, 202, 202, 202), // Set the background color here
           elevation: 0, // Set elevation to 0
           onTap: (index) {
-            if (index == 2) {
+            if (index == 4) {
               // Logout action
               _signOut();
             } else {
@@ -49,7 +51,7 @@ class _NavBarState extends State<NavBar> {
             BottomNavigationBarItem(
               icon: buildIconWithBox(Icons.start, 0),
               label: 'Start',
-              backgroundColor: Color.fromARGB(255, 2, 6, 247),
+              backgroundColor: Color.fromARGB(255, 112, 112, 112),
             ),
             BottomNavigationBarItem(
               icon: buildIconWithBox(Icons.note, 1),
@@ -59,6 +61,16 @@ class _NavBarState extends State<NavBar> {
             BottomNavigationBarItem(
               icon: buildIconWithBox(Icons.last_page, 2),
               label: 'Last Submit',
+              backgroundColor: Color.fromARGB(255, 214, 214, 214),
+            ),
+            BottomNavigationBarItem(
+              icon: buildIconWithBox(Icons.data_array, 3),
+              label: 'Summary',
+              backgroundColor: Color.fromARGB(255, 214, 214, 214),
+            ),
+            BottomNavigationBarItem(
+              icon: buildIconWithBox(Icons.logout, 4),
+              label: 'Logout',
               backgroundColor: Color.fromARGB(255, 214, 214, 214),
             ),
           ],

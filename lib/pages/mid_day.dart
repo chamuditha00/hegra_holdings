@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hegra_holdings/components/NavBar.dart';
 import 'package:hegra_holdings/pages/last_submit.dart';
 import 'package:intl/intl.dart';
 
@@ -124,7 +125,7 @@ class MidDaySummaryState extends State<MidDaySummary> {
 
   Future<void> _submitMid() async {
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
 
     String _getLoggedUserId() {
@@ -150,6 +151,6 @@ class MidDaySummaryState extends State<MidDaySummary> {
       ),
     );
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LastSubmit()));
+        context, MaterialPageRoute(builder: (context) => NavBar()));
   }
 }

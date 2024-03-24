@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hegra_holdings/components/NavBar.dart';
 import 'package:hegra_holdings/pages/summary.dart';
 import 'package:intl/intl.dart';
 
@@ -170,14 +171,6 @@ class LastSubmitState extends State<LastSubmit> {
                                 borderSide: BorderSide(color: Colors.black),
                               )),
                         ),
-                        TextFormField(
-                          controller: _UnableToAttendTextController,
-                          decoration: InputDecoration(
-                              labelText: 'Unable to Attend',
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              )),
-                        ),
                         SizedBox(
                           height: 80,
                         ),
@@ -257,6 +250,6 @@ class LastSubmitState extends State<LastSubmit> {
       ),
     );
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => LastSubmitData()));
+        context, MaterialPageRoute(builder: (context) => NavBar()));
   }
 }
