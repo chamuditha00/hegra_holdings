@@ -137,8 +137,18 @@ class MidDaySummaryState extends State<MidDaySummary> {
       }
     }
 
+    String _getLoggedUserName() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.displayName ?? 'No user name';
+      } else {
+        return 'No user logged in';
+      }
+    }
+
     await _firestore.collection('mid_day').add({
       'user_id': _getLoggedUserId(),
+      'user_name': _getLoggedUserName(),
       'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
       'NoOfReconnections': _NoOfReconnectionsTextController.text,
       'date': formattedDate,
