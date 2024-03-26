@@ -29,7 +29,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Hegra Holdings',
       debugShowCheckedModeBanner: false,
-      home: ConnectionDataPage(),
+      home: SplashScreen(),
     );
   }
 }

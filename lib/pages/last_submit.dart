@@ -29,7 +29,6 @@ class LastSubmitState extends State<LastSubmit> {
   TextEditingController _CantFindTextController = TextEditingController();
   TextEditingController _ObjectionTextController = TextEditingController();
   TextEditingController _StoppedByCEBTextController = TextEditingController();
-  TextEditingController _UnableToAttendTextController = TextEditingController();
 
   final _firestore = FirebaseFirestore.instance;
 
@@ -238,7 +237,29 @@ class LastSubmitState extends State<LastSubmit> {
       }
     }
 
+    String _getCurentUsername() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.displayName!;
+      } else {
+        return 'Error loading user name';
+      }
+    }
+
     await _firestore.collection('last_submit').add({
+      'userId': _getLoggedUserId(),
+      'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
+      'NoOfReconnections': _NoOfReconnectionsTextController.text,
+      'AlreadyPaid': _AlreadyPaidTextController.text,
+      'MeterRemoved': _MeterRemovedTextController.text,
+      'AlreadyDisconnected': _AlreadyDisconnectedTextController.text,
+      'GateClosed': _GateClosedTextController.text,
+      'PermanatlyClosed': _PermanatlyClosedTextController.text,
+      'WrongMeter': _WrongMeterTextController.text,
+      'BillingError': _BillingErrorTextController.text,
+      'CantFind': _CantFindTextController.text,
+      'Objection': _ObjectionTextController.text,
+      'StoppedByCEB': _StoppedByCEBTextController.text,
       'UnableToAttend': _unableToAttend,
       'date': formattedDate,
       'time': formattedTime,
