@@ -237,17 +237,18 @@ class LastSubmitState extends State<LastSubmit> {
       }
     }
 
-    String _getCurentUsername() {
+    String _getLoggedUserName() {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        return user.displayName!;
+        return user.displayName ?? 'No user name';
       } else {
-        return 'Error loading user name';
+        return 'No user logged in';
       }
     }
 
     await _firestore.collection('last_submit').add({
       'userId': _getLoggedUserId(),
+      'userName': _getLoggedUserName(),
       'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
       'NoOfReconnections': _NoOfReconnectionsTextController.text,
       'AlreadyPaid': _AlreadyPaidTextController.text,
