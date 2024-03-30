@@ -29,7 +29,7 @@ class _ConnectionDataPageState extends State<ConnectionDataPage> {
           padding: const EdgeInsets.all(8.0),
           child: StreamBuilder<QuerySnapshot>(
             stream: _firestore
-                .collection('mid_day')
+                .collection('last_submit')
                 .where('user_id', isEqualTo: _user!.uid)
                 .orderBy('date')
                 .snapshots(),
@@ -89,13 +89,14 @@ class _ConnectionDataPageState extends State<ConnectionDataPage> {
                             children: [
                               Text(
                                 'No of Disconnections: ${doc['NoOfDisconnections']}',
-                                style: TextStyle(color: Colors.red),
+                                style: TextStyle(
+                                    color:
+                                        const Color.fromARGB(255, 240, 16, 0)),
                               ),
                               Text(
                                   'No of Reconnections: ${doc['NoOfReconnections']}',
                                   style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          255, 30, 216, 36))),
+                                      color: Color.fromARGB(255, 0, 70, 2))),
                             ],
                           ),
                         );

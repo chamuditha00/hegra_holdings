@@ -202,6 +202,29 @@ class LastSubmitState extends State<LastSubmit> {
   }
 
   Future<void> _submitLast() async {
+    String _getLoggedUserId() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        return 'No user logged in';
+      }
+    }
+
+    User? _user = FirebaseAuth.instance.currentUser;
+
+    DateTime currentDate = DateTime.now();
+
+    QuerySnapshot snapshot = await _firestore
+        .collection('previous_balance')
+        .where('user_id', isEqualTo: _user!.uid)
+        .where('date', isLessThan: Timestamp.fromDate(currentDate))
+        .orderBy('date', descending: true)
+        .limit(1)
+        .get();
+    DocumentSnapshot documentSnapshot = snapshot.docs.first;
+
+    int total_jobs = int.parse(documentSnapshot['total_jobs']);
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
@@ -226,16 +249,8 @@ class LastSubmitState extends State<LastSubmit> {
         cantFind +
         objection +
         stoppedByCEB;
+    int balance = total_jobs - unableToAttend;
     String _unableToAttend = unableToAttend.toString();
-
-    String _getLoggedUserId() {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        return user.uid;
-      } else {
-        return 'No user logged in';
-      }
-    }
 
     String _getLoggedUserName() {
       User? user = FirebaseAuth.instance.currentUser;
@@ -262,6 +277,7 @@ class LastSubmitState extends State<LastSubmit> {
       'Objection': _ObjectionTextController.text,
       'StoppedByCEB': _StoppedByCEBTextController.text,
       'UnableToAttend': _unableToAttend,
+      'Balance': balance,
       'date': formattedDate,
       'time': formattedTime,
     });
