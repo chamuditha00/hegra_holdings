@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
-import 'package:hegra_holdings/admin/register_user.dart';
-import 'package:hegra_holdings/admin/show_users.dart';
-import 'package:hegra_holdings/admin/summary_mid.dart';
 import 'package:hegra_holdings/pages/splash_screen.dart';
 
 import 'package:hegra_holdings/repository/user_repository.dart';

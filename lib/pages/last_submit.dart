@@ -202,6 +202,29 @@ class LastSubmitState extends State<LastSubmit> {
   }
 
   Future<void> _submitLast() async {
+    String _getLoggedUserId() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.uid;
+      } else {
+        return 'No user logged in';
+      }
+    }
+
+    User? _user = FirebaseAuth.instance.currentUser;
+
+    DateTime currentDate = DateTime.now();
+
+    QuerySnapshot snapshot = await _firestore
+        .collection('previous_balance')
+        .where('user_id', isEqualTo: _user!.uid)
+        .where('date', isLessThan: Timestamp.fromDate(currentDate))
+        .orderBy('date', descending: true)
+        .limit(1)
+        .get();
+    DocumentSnapshot documentSnapshot = snapshot.docs.first;
+
+    int total_jobs = int.parse(documentSnapshot['total_jobs']);
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
@@ -226,28 +249,21 @@ class LastSubmitState extends State<LastSubmit> {
         cantFind +
         objection +
         stoppedByCEB;
+    int balance = total_jobs - unableToAttend;
     String _unableToAttend = unableToAttend.toString();
 
-    String _getLoggedUserId() {
+    String _getLoggedUserName() {
       User? user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        return user.uid;
+        return user.displayName ?? 'No user name';
       } else {
         return 'No user logged in';
       }
     }
 
-    String _getCurentUsername() {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        return user.displayName!;
-      } else {
-        return 'Error loading user name';
-      }
-    }
-
     await _firestore.collection('last_submit').add({
       'userId': _getLoggedUserId(),
+      'userName': _getLoggedUserName(),
       'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
       'NoOfReconnections': _NoOfReconnectionsTextController.text,
       'AlreadyPaid': _AlreadyPaidTextController.text,
@@ -261,6 +277,7 @@ class LastSubmitState extends State<LastSubmit> {
       'Objection': _ObjectionTextController.text,
       'StoppedByCEB': _StoppedByCEBTextController.text,
       'UnableToAttend': _unableToAttend,
+      'Balance': balance,
       'date': formattedDate,
       'time': formattedTime,
     });
