@@ -177,7 +177,7 @@ class StartPageState extends State<StartPage> {
 
   Future<void> _startTheDay() async {
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
 
     int recivedJobs = int.parse(_recivedJobsTextController.text);
