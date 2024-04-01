@@ -177,7 +177,7 @@ class StartPageState extends State<StartPage> {
 
   Future<void> _startTheDay() async {
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
 
     int recivedJobs = int.parse(_recivedJobsTextController.text);
@@ -194,6 +194,15 @@ class StartPageState extends State<StartPage> {
       }
     }
 
+    String _getLoggedUserName() {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        return user.displayName ?? 'No user name';
+      } else {
+        return 'No user logged in';
+      }
+    }
+
     await _firestore.collection('previous_balance').add({
       'user_id': _getLoggedUserId(),
       'total_jobs': _totalJobs,
@@ -202,6 +211,7 @@ class StartPageState extends State<StartPage> {
     });
 
     await _firestore.collection('start_day').add({
+      'user_name': _getLoggedUserName(),
       'user_id': _getLoggedUserId(),
       'helper': _helperTextController.text,
       'returned_sheets': _returnedSheetsTextController.text,

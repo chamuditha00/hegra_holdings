@@ -51,12 +51,12 @@ class _NavBarState extends State<NavBar> {
             BottomNavigationBarItem(
               icon: buildIconWithBox(Icons.start, 0),
               label: 'Start',
-              backgroundColor: Color.fromARGB(255, 112, 112, 112),
+              backgroundColor: Color.fromARGB(255, 214, 214, 214),
             ),
             BottomNavigationBarItem(
               icon: buildIconWithBox(Icons.note, 1),
               label: 'Mid Day',
-              backgroundColor: Color.fromARGB(255, 179, 179, 179),
+              backgroundColor: Color.fromARGB(255, 214, 214, 214),
             ),
             BottomNavigationBarItem(
               icon: buildIconWithBox(Icons.last_page, 2),
