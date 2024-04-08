@@ -215,16 +215,16 @@ class LastSubmitState extends State<LastSubmit> {
 
     DateTime currentDate = DateTime.now();
 
-    QuerySnapshot snapshot = await _firestore
+    /*QuerySnapshot snapshot = await _firestore
         .collection('previous_balance')
         .where('user_id', isEqualTo: _user!.uid)
         .where('date', isLessThan: Timestamp.fromDate(currentDate))
         .orderBy('date', descending: true)
         .limit(1)
-        .get();
-    DocumentSnapshot documentSnapshot = snapshot.docs.first;
+        .get();*/
+    // DocumentSnapshot documentSnapshot = snapshot.docs.first;
 
-    int total_jobs = int.parse(documentSnapshot['total_jobs']);
+    //int total_jobs = int.parse(documentSnapshot['total_jobs']);
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
@@ -249,7 +249,7 @@ class LastSubmitState extends State<LastSubmit> {
         cantFind +
         objection +
         stoppedByCEB;
-    int balance = total_jobs - unableToAttend;
+    // int balance = total_jobs - unableToAttend;
     String _unableToAttend = unableToAttend.toString();
 
     String _getLoggedUserName() {
@@ -277,7 +277,7 @@ class LastSubmitState extends State<LastSubmit> {
       'Objection': _ObjectionTextController.text,
       'StoppedByCEB': _StoppedByCEBTextController.text,
       'UnableToAttend': _unableToAttend,
-      'Balance': balance,
+      // 'Balance': balance,
       'date': formattedDate,
       'time': formattedTime,
     });

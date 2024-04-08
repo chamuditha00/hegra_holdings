@@ -30,7 +30,7 @@ class _ConnectionDataPageState extends State<ConnectionDataPage> {
           child: StreamBuilder<QuerySnapshot>(
             stream: _firestore
                 .collection('last_submit')
-                .where('user_id', isEqualTo: _user!.uid)
+                .where('userId', isEqualTo: _user!.uid)
                 .orderBy('date')
                 .snapshots(),
             builder: (context, snapshot) {
