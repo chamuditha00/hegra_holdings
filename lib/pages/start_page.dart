@@ -54,12 +54,12 @@ class StartPageState extends State<StartPage> {
 
       // Update the TextField's controller
       setState(() {
-        _balanceController.text = balance != null ? balance.toString() : '0.0';
+        _balanceController.text = balance != null ? balance.toString() : '0';
       });
     } else {
       // If no document is found, set the balance to 0.0
       setState(() {
-        _balanceController.text = '0.0';
+        _balanceController.text = '0';
       });
     }
   }
@@ -242,30 +242,49 @@ class StartPageState extends State<StartPage> {
       }
     }
 
-    await _firestore.collection('previous_balance').add({
-      'user_id': _getLoggedUserId(),
-      'total_jobs': _totalJobs,
-      'date': formattedDate,
-      'time': formattedTime,
-    });
+    // Check if a submission has already been made for the current user for the current day
+    final querySnapshot = await _firestore
+        .collection('start_day')
+        .where('user_id', isEqualTo: _getLoggedUserId())
+        .where('date', isEqualTo: formattedDate)
+        .get();
 
-    await _firestore.collection('start_day').add({
-      'user_name': _getLoggedUserName(),
-      'user_id': _getLoggedUserId(),
-      'helper': _helperTextController.text,
-      'returned_sheets': _returnedSheetsTextController.text,
-      'balance_in_hand': balanceInHand.toString(),
-      'recived_jobs': _recivedJobsTextController.text,
-      'date': formattedDate,
-      'time': formattedTime,
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Day started successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => NavBar()));
+    // If there's already a submission for today, show a warning message
+    if (querySnapshot.docs.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'You have already submitted. You can only submit once a day.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    } else {
+      await _firestore.collection('previous_balance').add({
+        'user_id': _getLoggedUserId(),
+        'total_jobs': _totalJobs,
+        'date': formattedDate,
+        'time': formattedTime,
+      });
+
+      await _firestore.collection('start_day').add({
+        'user_name': _getLoggedUserName(),
+        'user_id': _getLoggedUserId(),
+        'helper': _helperTextController.text,
+        'returned_sheets': _returnedSheetsTextController.text,
+        'balance_in_hand': balanceInHand.toString(),
+        'recived_jobs': _recivedJobsTextController.text,
+        'date': formattedDate,
+        'time': formattedTime,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Day started successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => NavBar()));
+    }
   }
 }

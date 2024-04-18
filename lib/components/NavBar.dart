@@ -5,6 +5,7 @@ import 'package:hegra_holdings/pages/login_page.dart';
 import 'package:hegra_holdings/pages/mid_day.dart';
 import 'package:hegra_holdings/pages/start_page.dart';
 import 'package:hegra_holdings/pages/summary.dart';
+import 'package:intl/intl.dart';
 
 class NavBar extends StatefulWidget {
   @override
@@ -13,6 +14,8 @@ class NavBar extends StatefulWidget {
 
 class _NavBarState extends State<NavBar> {
   int _currentIndex = 0;
+  DateTime now = DateTime.now();
+  String formattedDate = DateFormat('kk:mm').format(DateTime.now());
 
   final List<Widget> _pages = [
     StartPage(),
@@ -45,6 +48,39 @@ class _NavBarState extends State<NavBar> {
               setState(() {
                 _currentIndex = index;
               });
+            }
+            if (index == 1) {
+              // Check if the current time is less than 12:00 PM
+              if (formattedDate.compareTo('12:00') < 0) {
+                // Show an AlertDialog if the time is less than 12:00 PM
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: Text('Submission Not Allowed'),
+                      content: Text(
+                          'You can only submit mid-day summary after 12:00 PM.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            // Close the dialog and navigate to index 0
+                            Navigator.pop(context);
+                            setState(() {
+                              _currentIndex = 0;
+                            });
+                          },
+                          child: Text('OK'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              } else {
+                // Allow setting the index to 1
+                setState(() {
+                  _currentIndex = index;
+                });
+              }
             }
           },
           items: [
@@ -80,15 +116,47 @@ class _NavBarState extends State<NavBar> {
   }
 
   Future<void> _signOut() async {
-    try {
-      await FirebaseAuth.instance.signOut();
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginPage()),
-      );
-    } catch (e) {
-      print('Error during sign out: $e');
-      // Handle sign-out error if necessary
+    // Show a confirmation dialog before signing out
+    bool? shouldSignOut = await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirm Sign Out'),
+          content: Text('Are you sure you want to sign out?'),
+          actions: [
+            // No button, close the dialog without signing out
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Cancel'),
+            ),
+            // Yes button, close the dialog and return true to proceed with sign out
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+
+    // If the user confirmed they want to sign out
+    if (shouldSignOut == true) {
+      try {
+        // Sign out the user
+        await FirebaseAuth.instance.signOut();
+        // Navigate to the LoginPage
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } catch (e) {
+        print('Error during sign out: $e');
+        // Handle sign-out error if necessary
+      }
     }
   }
 

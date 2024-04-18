@@ -146,21 +146,39 @@ class MidDaySummaryState extends State<MidDaySummary> {
       }
     }
 
-    await _firestore.collection('mid_day').add({
-      'user_id': _getLoggedUserId(),
-      'user_name': _getLoggedUserName(),
-      'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
-      'NoOfReconnections': _NoOfReconnectionsTextController.text,
-      'date': formattedDate,
-      'time': formattedTime,
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Mid Day submit successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => NavBar()));
+    final querySnapshot = await _firestore
+        .collection('mid_day')
+        .where('user_id', isEqualTo: _getLoggedUserId())
+        .where('date', isEqualTo: formattedDate)
+        .get();
+
+    // If there's already a submission for today, show a warning message
+    if (querySnapshot.docs.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'You have already submitted. You can only submit once a day.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    } else {
+      await _firestore.collection('mid_day').add({
+        'user_id': _getLoggedUserId(),
+        'user_name': _getLoggedUserName(),
+        'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
+        'NoOfReconnections': _NoOfReconnectionsTextController.text,
+        'date': formattedDate,
+        'time': formattedTime,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Mid Day submit successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => NavBar()));
+    }
   }
 }
