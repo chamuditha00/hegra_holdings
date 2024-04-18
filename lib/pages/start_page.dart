@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hegra_holdings/components/NavBar.dart';
-import 'package:hegra_holdings/pages/mid_day.dart';
 import 'package:intl/intl.dart';
 
 class StartPage extends StatefulWidget {
@@ -14,10 +13,63 @@ class StartPage extends StatefulWidget {
 class StartPageState extends State<StartPage> {
   TextEditingController _helperTextController = TextEditingController();
   TextEditingController _returnedSheetsTextController = TextEditingController();
-  TextEditingController _balanceInHandTextController = TextEditingController();
   TextEditingController _recivedJobsTextController = TextEditingController();
+  TextEditingController _balanceController = TextEditingController();
 
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  String _getLoggedUserId() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      return user.uid;
+    } else {
+      return 'No user logged in';
+    }
+  }
+
+  // Fetch the balance from Firestore based on the last submitted document for the current user
+  Future<void> _fetchAndSetBalance() async {
+    // Assume `currentUserId` is the ID of the current user
+    final currentUserId =
+        _getLoggedUserId(); // Replace with your method to get the current user ID
+
+    // Reference to Firestore
+    final firestore = FirebaseFirestore.instance;
+
+    // Query to fetch the last submitted document for the current user
+    final querySnapshot = await firestore
+        .collection('last_submit')
+        .where('userId', isEqualTo: currentUserId)
+        .orderBy('date', descending: true)
+        .limit(1) // Get the most recent document
+        .get();
+
+    // Check if there's a document in the result
+    if (querySnapshot.docs.isNotEmpty) {
+      // Get the first document (latest one)
+      final doc = querySnapshot.docs.first;
+
+      // Extract the balance value from the document
+      final balance = doc.data()['Balance'] as String?;
+
+      // Update the TextField's controller
+      setState(() {
+        _balanceController.text = balance != null ? balance.toString() : '0.0';
+      });
+    } else {
+      // If no document is found, set the balance to 0.0
+      setState(() {
+        _balanceController.text = '0.0';
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch the balance when the widget is initialized
+    _fetchAndSetBalance();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,20 +126,23 @@ class StartPageState extends State<StartPage> {
                         SizedBox(
                           height: 20,
                         ),
-                        TextFormField(
+                        TextField(
+                          controller: _balanceController,
+                          readOnly: true,
                           decoration: InputDecoration(
-                              label: Text('Previous balance'),
-                              prefixIcon: Icon(
-                                Icons.skip_previous,
-                                color: Colors.black,
-                              ),
-                              border: OutlineInputBorder(),
-                              labelStyle: TextStyle(
-                                color: Colors.black,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0, color: Colors.black))),
+                            labelText: 'Previous Balance',
+                            prefixIcon: Icon(
+                              Icons.skip_previous,
+                              color: Colors.black,
+                            ),
+                            border: OutlineInputBorder(),
+                            labelStyle: TextStyle(
+                              color: Colors.black,
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    width: 2.0, color: Colors.black)),
+                          ),
                         ),
                         SizedBox(
                           height: 20,
@@ -99,25 +154,6 @@ class StartPageState extends State<StartPage> {
                               prefixIcon: Icon(
                                 Icons.keyboard_return_outlined,
                                 color: Colors.black,
-                              ),
-                              border: OutlineInputBorder(),
-                              labelStyle: TextStyle(
-                                color: Colors.black,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      width: 2.0, color: Colors.black))),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        TextFormField(
-                          controller: _balanceInHandTextController,
-                          decoration: InputDecoration(
-                              label: Text('Balance in hand'),
-                              prefixIcon: Icon(
-                                Icons.balance,
-                                color: Color.fromARGB(255, 0, 0, 0),
                               ),
                               border: OutlineInputBorder(),
                               labelStyle: TextStyle(
@@ -180,8 +216,11 @@ class StartPageState extends State<StartPage> {
     String formattedDate = DateFormat('yyyy-MM-dd').format(now);
     String formattedTime = DateFormat('kk:mm').format(now);
 
+    int returnedSheets = int.parse(_returnedSheetsTextController.text);
+    int priveousBalance = int.parse(_balanceController.text);
+
     int recivedJobs = int.parse(_recivedJobsTextController.text);
-    int balanceInHand = int.parse(_balanceInHandTextController.text);
+    int balanceInHand = priveousBalance - returnedSheets;
     int totalJobs = recivedJobs + balanceInHand;
     String _totalJobs = totalJobs.toString();
 
@@ -215,7 +254,7 @@ class StartPageState extends State<StartPage> {
       'user_id': _getLoggedUserId(),
       'helper': _helperTextController.text,
       'returned_sheets': _returnedSheetsTextController.text,
-      'balance_in_hand': _balanceInHandTextController.text,
+      'balance_in_hand': balanceInHand.toString(),
       'recived_jobs': _recivedJobsTextController.text,
       'date': formattedDate,
       'time': formattedTime,
