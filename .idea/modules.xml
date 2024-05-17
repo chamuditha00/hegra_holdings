@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/hegra_holdings.iml" filepath="$PROJECT_DIR$/hegra_holdings.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/hegra_holdings_android.iml" filepath="$PROJECT_DIR$/android/hegra_holdings_android.iml" />
+    </modules>
+  </component>
+</project>
