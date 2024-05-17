@@ -214,80 +214,99 @@ class LastSubmitState extends State<LastSubmit> {
     User? _user = FirebaseAuth.instance.currentUser;
 
     DateTime currentDate = DateTime.now();
+    String queredate = DateFormat('yyyy-MM-dd').format(currentDate);
 
-    QuerySnapshot snapshot = await _firestore
-        .collection('previous_balance')
-        .where('user_id', isEqualTo: _user!.uid)
-        .where('date', isLessThan: Timestamp.fromDate(currentDate))
-        .orderBy('date', descending: true)
-        .limit(1)
+    final querySnapshot = await _firestore
+        .collection('last_submit')
+        .where('userId', isEqualTo: _getLoggedUserId())
+        .where('date', isEqualTo: queredate)
         .get();
-    DocumentSnapshot documentSnapshot = snapshot.docs.first;
 
-    int total_jobs = int.parse(documentSnapshot['total_jobs']);
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('yyyy-MM-dd').format(now);
-    String formattedTime = DateFormat('kk:mm').format(now);
-    int alreadyPaid = int.parse(_AlreadyPaidTextController.text);
-    int meterRemoved = int.parse(_MeterRemovedTextController.text);
-    int alreadyDisconnected =
-        int.parse(_AlreadyDisconnectedTextController.text);
-    int gateClosed = int.parse(_GateClosedTextController.text);
-    int permanatlyClosed = int.parse(_PermanatlyClosedTextController.text);
-    int wrongMeter = int.parse(_WrongMeterTextController.text);
-    int billingError = int.parse(_BillingErrorTextController.text);
-    int cantFind = int.parse(_CantFindTextController.text);
-    int objection = int.parse(_ObjectionTextController.text);
-    int stoppedByCEB = int.parse(_StoppedByCEBTextController.text);
-    int unableToAttend = alreadyPaid +
-        meterRemoved +
-        alreadyDisconnected +
-        gateClosed +
-        permanatlyClosed +
-        wrongMeter +
-        billingError +
-        cantFind +
-        objection +
-        stoppedByCEB;
-    int balance = total_jobs - unableToAttend;
-    String _unableToAttend = unableToAttend.toString();
+    // If there's already a submission for today, show a warning message
+    if (querySnapshot.docs.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'You have already submitted. You can only submit once a day.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    } else {
+      QuerySnapshot snapshot = await _firestore
+          .collection('previous_balance')
+          .where('user_id', isEqualTo: _user!.uid)
+          .where('date', isLessThan: queredate)
+          .orderBy('date', descending: true)
+          .limit(1)
+          .get();
+      DocumentSnapshot documentSnapshot = snapshot.docs.first;
 
-    String _getLoggedUserName() {
-      User? user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        return user.displayName ?? 'No user name';
-      } else {
-        return 'No user logged in';
+      int total_jobs = int.parse(documentSnapshot['total_jobs']);
+      DateTime now = DateTime.now();
+      String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+      String formattedTime = DateFormat('kk:mm').format(now);
+      int alreadyPaid = int.parse(_AlreadyPaidTextController.text);
+      int meterRemoved = int.parse(_MeterRemovedTextController.text);
+      int alreadyDisconnected =
+          int.parse(_AlreadyDisconnectedTextController.text);
+      int gateClosed = int.parse(_GateClosedTextController.text);
+      int permanatlyClosed = int.parse(_PermanatlyClosedTextController.text);
+      int wrongMeter = int.parse(_WrongMeterTextController.text);
+      int billingError = int.parse(_BillingErrorTextController.text);
+      int cantFind = int.parse(_CantFindTextController.text);
+      int objection = int.parse(_ObjectionTextController.text);
+      int stoppedByCEB = int.parse(_StoppedByCEBTextController.text);
+      int unableToAttend = alreadyPaid +
+          meterRemoved +
+          alreadyDisconnected +
+          gateClosed +
+          permanatlyClosed +
+          wrongMeter +
+          billingError +
+          cantFind +
+          objection +
+          stoppedByCEB;
+      int balance = total_jobs - unableToAttend;
+      String _unableToAttend = unableToAttend.toString();
+
+      String _getLoggedUserName() {
+        User? user = FirebaseAuth.instance.currentUser;
+        if (user != null) {
+          return user.displayName ?? 'No user name';
+        } else {
+          return 'No user logged in';
+        }
       }
-    }
 
-    await _firestore.collection('last_submit').add({
-      'userId': _getLoggedUserId(),
-      'userName': _getLoggedUserName(),
-      'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
-      'NoOfReconnections': _NoOfReconnectionsTextController.text,
-      'AlreadyPaid': _AlreadyPaidTextController.text,
-      'MeterRemoved': _MeterRemovedTextController.text,
-      'AlreadyDisconnected': _AlreadyDisconnectedTextController.text,
-      'GateClosed': _GateClosedTextController.text,
-      'PermanatlyClosed': _PermanatlyClosedTextController.text,
-      'WrongMeter': _WrongMeterTextController.text,
-      'BillingError': _BillingErrorTextController.text,
-      'CantFind': _CantFindTextController.text,
-      'Objection': _ObjectionTextController.text,
-      'StoppedByCEB': _StoppedByCEBTextController.text,
-      'UnableToAttend': _unableToAttend,
-      'Balance': balance,
-      'date': formattedDate,
-      'time': formattedTime,
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Last submit successfully'),
-        backgroundColor: Colors.green,
-      ),
-    );
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => NavBar()));
+      await _firestore.collection('last_submit').add({
+        'userId': _getLoggedUserId(),
+        'userName': _getLoggedUserName(),
+        'NoOfDisconnections': _NoOfDisconnectionsTextController.text,
+        'NoOfReconnections': _NoOfReconnectionsTextController.text,
+        'AlreadyPaid': _AlreadyPaidTextController.text,
+        'MeterRemoved': _MeterRemovedTextController.text,
+        'AlreadyDisconnected': _AlreadyDisconnectedTextController.text,
+        'GateClosed': _GateClosedTextController.text,
+        'PermanatlyClosed': _PermanatlyClosedTextController.text,
+        'WrongMeter': _WrongMeterTextController.text,
+        'BillingError': _BillingErrorTextController.text,
+        'CantFind': _CantFindTextController.text,
+        'Objection': _ObjectionTextController.text,
+        'StoppedByCEB': _StoppedByCEBTextController.text,
+        'UnableToAttend': _unableToAttend,
+        'Balance': balance,
+        'date': formattedDate,
+        'time': formattedTime,
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Last submit successfully'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => NavBar()));
+    }
   }
 }
